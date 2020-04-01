@@ -75,12 +75,13 @@ def main():
     data_frame_electro_depot = pd.DataFrame(tab_electro_depot, )
     data_frame_electro_depot = data_frame_electro_depot.set_axis(parameters, axis=1)
    
-    data_frame_ldlc = pd.DataFrame(tab_ldlc)  
+    data_frame_ldlc = pd.DataFrame(tab_ldlc)
     data_frame_ldlc = data_frame_ldlc.set_axis(parameters,axis=1)
 
     print("Dataframe : " , data_frame_ldlc, sep='\n')
     print("Dataframe : " , data_frame_electro_depot, sep='\n')
-    
+
+    #data_frame_ldlc.to_csv("C:\\Users\\Arthur\\Desktop\\export_df_ldlc.csv", index=false, header=true, sep="\t")    
 
     # Analyse statistique
     analyse.analyseDF(data_frame_ldlc)

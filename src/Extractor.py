@@ -33,7 +33,13 @@ class Extractor:
         for j in range(0,len(extract_desc)-1):
             tab_page = []
             tab_page.append(extract_nom[j].text.upper())
-            tab_page.extend(extract_desc[j].text.split(' - '))
+            descrip = extract_desc[j].text.split(' - ')
+            descrip[2] = descrip[2].strip().lstrip('RAM ').rstrip(' Go')
+            descrip[4] = descrip[4].strip().rstrip(' Go')
+            if descrip[4] == '1 T':
+                descrip[4] = '1000'
+            descrip[6] = descrip[6].strip().rstrip(' mAh')
+            tab_page.extend(descrip)
             tab_page.append(json_Prix["ecommerce"]["impressions"][j+1]["price"])
             note = extract_avis[j].find('span')
             if note is None:
