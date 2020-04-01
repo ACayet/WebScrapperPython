@@ -1,6 +1,14 @@
 {
-    "sites": [
-        "www.ldlc.com/telephonie/telephonie-portable/mobile-smartphone/c4416/page",
-        "https://www.electrodepot.fr/smartphone-mobilite/telephone-mobile-debloque/smartphone.html?p="
-    ]
+    "sites": {
+        "ldlc":{
+            "base_url":"https://www.ldlc.com/telephonie/telephonie-portable/mobile-smartphone/c4416",
+            "arg_page":"/page",
+            "filter":"/+fb-C000000806,C000001062,C000001080,C000005023,C000005287,C000034158,C000034251,C000034257,C000034270,C000035309,C000035701,C000036359,C000037259,C000038024+fv991-6515.html"
+        },
+        "electro_depot":{
+            "base_url":"https://www.electrodepot.fr/smartphone-mobilite/telephone-mobile-debloque/smartphone.html",
+            "arg_page":"?p=",
+            "filter":""
+        }
+    }
 }

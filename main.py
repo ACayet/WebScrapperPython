@@ -4,97 +4,105 @@ import bs4
 import random
 import requests
 import itertools as it
+import json
 
 
-site = 'https://www.ldlc.com/telephonie/telephonie-portable/mobile-smartphone/c4416/page'
+def getSiteList():
+    with open('Assets/site_list.json') as siteList:
+        return json.load(siteList)
 
-def get_pages(site, nb):
+
+def get_pages(base_url, arg_page, filters, nb):
     pages = []
-    for i in range(2,nb+1):
-        j = site + str(i)
+    pages.append(base_url + filters)
+    for i in range(2, nb+1):
+        j = base_url + arg_page + str(i) + filters
         pages.append(j)
     return pages
 
-pages = get_pages(site,10)
-print(pages)
+
+def main():
+
+    urls = getSiteList()
+
+    pages_ldlc = get_pages(urls["sites"]["ldlc"]["base_url"], urls["sites"]["ldlc"]["arg_page"], urls["sites"]["ldlc"]["filter"], 3)
+    pages_electro_depot = get_pages(urls["sites"]["electro_depot"]["base_url"], urls["sites"]["ldlc"]["arg_page"], urls["sites"]["ldlc"]["filter"], 3)
+
+    # https://www.proxy-list.download/HTTPS
+    proxies = pd.read_csv('Assets/proxy_list.txt', header=None)
+    proxies = proxies.values.tolist()
+    proxies = list(it.chain.from_iterable(proxies))
 
 
-# https://www.proxy-list.download/HTTPS
-proxies = pd.read_csv('Assets/proxy_list.txt', header = None)
-proxies = proxies.values.tolist()
-proxies = list(it.chain.from_iterable(proxies))
+    # https://www.whatismybrowser.com/guides/the-latest-user-agent/chrome
+    useragents = pd.read_csv('Assets/useragents_list.txt', header=None, sep='-')
+    useragents = useragents.values.tolist()
+    useragents = list(it.chain.from_iterable(useragents))
 
+    data_frame = pd.DataFrame()
+    parameters = ['data-nom', 'data-connectivite', 'data-processeur', 'data-ram', 'data-ecran', 'data-stockage', 'data-reseau', 'data-batterie', 'data-os', 'data-prix', 'data-note', 'data-nb_avis']
 
-# https://www.whatismybrowser.com/guides/the-latest-user-agent/chrome
-useragents = pd.read_csv('Assets/useragents_list.txt',header = None, sep = '-')
-useragents = useragents.values.tolist()
-useragents = list(it.chain.from_iterable(useragents))
+    # Creation de la liste iterative en boucle pour le proxy et l'user agent
+    proxy_pool = it.cycle(proxies)
+    ua_pool = it.cycle(useragents)
 
-data_frame = pd.DataFrame()
-parameters = ['data-nom','data-connectivite','data-processeur','data-ram','data-ecran','data-stockage','data-surface','data-reseau','data-batterie','data-os','data-prix','data-note','data-nb_avis']
+    tab = []
 
-# Creation de la liste iterative en boucle pour le proxy et l'user agent
-proxy_pool = it.cycle(proxies)
-ua_pool = it.cycle(useragents)
+    while len(pages_ldlc) > 0:
+        for i in pages_ldlc:
+            # print(i)
 
+            data_frame_page = pd.DataFrame()
+            parameters = ['data-nom', 'data-connectivite', 'data-processeur', 'data-ram', 'data-ecran', 'data-stockage', 'data-reseau', 'data-batterie', 'data-os', 'data-prix', 'data-note', 'data-nb_avis']
 
-while len(pages) > 0:
-    for i in pages:
-        #print(i)
+            # itération dans un liste de proxies et de useragents
+            proxy = next(proxy_pool)
+            useragent = next(ua_pool)
 
-        data_frame_page = pd.DataFrame()
-        parameters = ['data-nom','data-connectivite','data-processeur','data-ram','data-ecran','data-stockage','data-surface','data-reseau','data-batterie','data-os','data-prix','data-note','data-nb_avis']
-        
-        # itération dans un liste de proxies et de useragents 
-        proxy = next(proxy_pool)
-        useragent = next(ua_pool)
+            # essai d'ouverture d'une page
+            try:
+                # Requete au site web et retourne dans la variable 'response.text' le texte html
+                response = requests.get(i, proxies={"http": proxy, "https": proxy}, headers={'User-Agent': useragent}, timeout=7)
+                time.sleep(random.randrange(1, 5))
 
-        # essai d'ouverture d'une page
-        try:
-            # Requete au site web et retourne dans la variable 'response.text' le texte html
-            response = requests.get(i,proxies={"http": proxy, "https": proxy}, headers={'User-Agent': useragent},timeout=7)
-            time.sleep(random.randrange(1,5))
-    
-            # parse the html using beautiful soup and store in variable 'soup'
-            soup = bs4.BeautifulSoup(response.text, 'html.parser')
-            
-            extract_nom = soup.find_all('h3',{'class':'title-3'})
-            for j in extract_nom:
-                tab = j.text
-
-            extract_desc = soup.find_all('p',{'class':'desc'})
-            for j in extract_desc:
-                ligne = j.text
-                tab = ligne.split(' - ')
-                print(tab)
-    
-            extract_avis = soup.find_all('div',{'class':'ratingClient'})
-            for j in extract_avis:
-                tab = j.text
-
-            extract_prix = soup.find_all('div',{'class':'price'})
-            for j in extract_prix:
-                tab = j.text
-
-            # on supprime de la liste la page scrapper    
-            pages.remove(i)
-        except:
-            print("Skipping proxy. Connnection error")
-        
-#print(tab)
-
-
-""" 
-#extraction des données        
-for param in parameters:
-    l = []
-    for elements in p_box:
-        j = elements[param]
-        l.append(j)
-    l = pd.DataFrame(l, columns = [param])
-    df_f = pd.concat([df_f,l], axis = 1)
-df = df.append(df_f, ignore_index=True)
+                html = response.text
                 
-pages.remove(i)
-print(df.shape)
-"""
+                # parse the html using beautiful soup and store in variable 'soup'
+                soup = bs4.BeautifulSoup(html, 'html.parser')
+
+                html = html[html.index("dataLayer.push("):]
+                html = html[:html.index("</script>")]
+                html = html.replace("dataLayer.push(", "")
+                html = html.replace(");", "")
+                html = html.replace("'", "\"")
+
+                # Conversion en json
+                json_Prix = json.loads(html)
+
+                extract_nom = soup.find_all('h3', {'class': 'title-3'})
+                extract_desc = soup.find_all('p', {'class': 'desc'})
+                extract_avis = soup.find_all('div', {'class': 'ratingClient'})
+                
+                
+
+                for j in range(0,len(extract_desc)-1):
+                    tab_page = []
+                    tab_page.append(extract_nom[j].text)
+                    tab_page.extend(extract_desc[j].text.split(' - '))
+                    tab_page.append(json_Prix["ecommerce"]["impressions"][j+1]["price"])
+                    note = extract_avis[j].find('span')
+                    if note is None:
+                        tab_page.append(None)
+                        tab_page.append("0")
+                    else:
+                        tab_page.append(note["class"][0].lstrip("star-"))
+                        tab_page.append(extract_avis[j].text.strip("\n ").rstrip(" avis"))
+                    tab.append(tab_page)
+                
+                # on supprime de la liste la page scrapper
+                pages_ldlc.remove(i)
+            except:
+                print("Skipping proxy. Connnection error")
+    print(*tab, sep = "\n")
+
+main()
