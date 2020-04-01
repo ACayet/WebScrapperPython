@@ -50,10 +50,6 @@ def main():
 
     while len(pages_ldlc) > 0:
         for i in pages_ldlc:
-            # print(i)
-
-            data_frame_page = pd.DataFrame()
-            parameters = ['data-nom', 'data-connectivite', 'data-processeur', 'data-ram', 'data-ecran', 'data-stockage', 'data-reseau', 'data-batterie', 'data-os', 'data-prix', 'data-note', 'data-nb_avis']
 
             # itération dans un liste de proxies et de useragents
             proxy = next(proxy_pool)
@@ -103,6 +99,9 @@ def main():
                 pages_ldlc.remove(i)
             except:
                 print("Skipping proxy. Connnection error")
-    print(*tab, sep = "\n")
-
+    #print(*tab, sep = "\n")
+    data_frame = pd.DataFrame(tab)
+    print(parameters)
+    data_frame = data_frame.set_axis(parameters,axis=1)
+    print("Dataframe : " , data_frame, sep='\n')
 main()
