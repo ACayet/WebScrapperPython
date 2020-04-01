@@ -35,8 +35,7 @@ def prepareUserAgent():
 
 def main():
     # Initialisation des differentes classes
-    scrap_ldlc = Scrapper()
-    scrap_electro_depot = Scrapper()
+    scrapping = Scrapper()
 
     extract_ldlc = Extractor('Ldlc')
     extract_electro_depot = Extractor('ElectroDepot')
@@ -68,22 +67,23 @@ def main():
 
 
     # Scrapping des sites et extraction
-    tab_ldlc = scrap_ldlc.scrapPage(pages_ldlc,proxy_pool,ua_pool,extract_ldlc)
-    tab_electro_depot = scrap_electro_depot.scrapPage(pages_electro_depot,proxy_pool,ua_pool,extract_electro_depot)
+    tab_ldlc = scrapping.scrapPage(pages_ldlc,proxy_pool,ua_pool,extract_ldlc)
+    tab_electro_depot = scrapping.scrapPage(pages_electro_depot,proxy_pool,ua_pool,extract_electro_depot)
 
 
     # Creation des dataframe
     data_frame_electro_depot = pd.DataFrame(tab_electro_depot, )
     data_frame_electro_depot = data_frame_electro_depot.set_axis(parameters, axis=1)
-
+   
     data_frame_ldlc = pd.DataFrame(tab_ldlc)  
     data_frame_ldlc = data_frame_ldlc.set_axis(parameters,axis=1)
 
     print("Dataframe : " , data_frame_ldlc, sep='\n')
     print("Dataframe : " , data_frame_electro_depot, sep='\n')
- 
+    
 
     # Analyse statistique
     analyse.analyseDF(data_frame_ldlc)
+    #analyse.analyseDF(data_frame_electro_depot)
 
 main()

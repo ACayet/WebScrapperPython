@@ -32,7 +32,7 @@ class Extractor:
 
         for j in range(0,len(extract_desc)-1):
             tab_page = []
-            tab_page.append(extract_nom[j].text)
+            tab_page.append(extract_nom[j].text.upper())
             tab_page.extend(extract_desc[j].text.split(' - '))
             tab_page.append(json_Prix["ecommerce"]["impressions"][j+1]["price"])
             note = extract_avis[j].find('span')
@@ -56,7 +56,7 @@ class Extractor:
 
         for j in range(0,len(extract_nom)):
             tab_page = []
-            tab_page.append(extract_nom[j].text.strip())
+            tab_page.append(extract_nom[j].text.strip().upper().lstrip('SMARTPHONE'))
             for k in range(1, 9):
                 tab_page.append(None)
             tab_page.append(extract_prix[j].text.replace('€','.').strip())
