@@ -81,7 +81,7 @@ def main():
     print("Dataframe : " , data_frame_ldlc, sep='\n')
     print("Dataframe : " , data_frame_electro_depot, sep='\n')
 
-    #data_frame_ldlc.to_csv("C:\\Users\\Arthur\\Desktop\\export_df_ldlc.csv", index=false, header=true, sep="\t")    
+    data_frame_ldlc.to_csv(r"C:\Users\Arthur\Desktop\export_df_ldlc.csv", index=False, header=True)    
 
     # Analyse statistique
     analyse.analyseDF(data_frame_ldlc)
