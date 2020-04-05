@@ -1,3 +1,3 @@
 # WebScrapperPython
 
-On essaie de faire des truc et ca marche moyen
+Bot permettant le scraping python de site web
