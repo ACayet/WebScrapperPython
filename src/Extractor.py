@@ -4,11 +4,11 @@ import json
 
 class Extractor:
     
-    site = None
+    
 
-    def __init__(self, site):
+    def __init__(self):
         super().__init__()
-        self.site = site
+        
 
 
     def extractDataLdlc(self, text_reponse):

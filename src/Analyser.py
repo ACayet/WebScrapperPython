@@ -65,26 +65,25 @@ class Analyser :
         ax1.set_ylabel('prix moyen en €')
         plt.show()
 
+    def corelation(self, df_analyse):
+        #Corélation avec coef de Pearson
+        temp_df1 = df_analyse  [["data-prix","data-ram"]]
+        pearsoncorr = temp_df1.corr(method='pearson')
+        sns.heatmap(pearsoncorr, 
+            xticklabels=pearsoncorr.columns,
+            yticklabels=pearsoncorr.columns,
+            cmap='RdBu_r',
+            annot=True,
+            linewidth=0.5)
+        plt.show()
+
     def analyseDF(self, data_frame):
         df_analyse = data_frame
         df_analyse = self.prepareVarDF(df_analyse)
-
-        self.boiteMoustachePrixRam(df_analyse)
         self.camembertStockage(df_analyse)
         self.camembertRam(df_analyse)
         self.densitePrix(df_analyse)
         self.densiteBatterie(df_analyse)
+        self.corelation(df_analyse)
+        self.boiteMoustachePrixRam(df_analyse)
         self.evolvePrixMoyenRam(df_analyse)
-
-        
-
-        
-
-        
-
-
-        
-
-        
-
-        

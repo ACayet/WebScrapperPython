@@ -37,8 +37,7 @@ def main():
     # Initialisation des differentes classes
     scrapping = Scrapper()
 
-    extract_ldlc = Extractor('Ldlc')
-    extract_electro_depot = Extractor('ElectroDepot')
+    extract = Extractor()
 
     analyse = Analyser()
 
@@ -67,8 +66,8 @@ def main():
 
 
     # Scrapping des sites et extraction
-    tab_ldlc = scrapping.scrapPage(pages_ldlc,proxy_pool,ua_pool,extract_ldlc)
-    tab_electro_depot = scrapping.scrapPage(pages_electro_depot,proxy_pool,ua_pool,extract_electro_depot)
+    tab_ldlc = scrapping.scrapPage(pages_ldlc,proxy_pool,ua_pool,extract,extract.extractDataLdlc)
+    tab_electro_depot = scrapping.scrapPage(pages_electro_depot,proxy_pool,ua_pool,extract,extract.extractDataElectroDepot)
 
 
     # Creation des dataframe

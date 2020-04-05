@@ -10,7 +10,7 @@ class Scrapper:
         super().__init__()
         
 
-    def scrapPage(self, pages, proxy_pool, user_agent_pool, extract):
+    def scrapPage(self, pages, proxy_pool, user_agent_pool, extract, funcExtract):
         tab_temp = []
         while len(pages) > 0:
             for i in pages:
@@ -24,10 +24,9 @@ class Scrapper:
                     # Requete au site web et retourne dans la variable 'response.text' le texte html
                     response = requests.get(i, proxies={"http": proxy, "https": proxy}, headers={'User-Agent': useragent}, timeout=7)
                     time.sleep(random.randrange(1, 5))
-                    if extract.site == 'Ldlc':
-                        tab_temp.extend(extract.extractDataLdlc(response.text))
-                    elif extract.site == 'ElectroDepot':
-                        tab_temp.extend(extract.extractDataElectroDepot(response.text))
+                    
+                    # Extraction avec la fonction d'extraction passé en argument
+                    tab_temp.extend(funcExtract(response.text))
 
                     # on supprime de la liste la page scrapper
                     pages.remove(i)
